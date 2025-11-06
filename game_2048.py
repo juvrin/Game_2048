@@ -30,36 +30,53 @@ def print_grid(grid):
     print(*grid, sep="\n")
 
 
-def move_filled_cells_up(grid):
-    """Move filled cells to new position. There are 3 possible scenarios:
-    1) if there is a cell above them that is filled and it's the same number => addition
-    2) if there is a cell above them that is filled and it's NOT the same number => it stays put
-    3) if the cell above is empty/filled with 0, we keep going up until either
-    scenario 1 or 2 occurs OR we're at the top row (row == 0)
-    """
+"""Move filled cells to new position. There are 3 possible scenarios:
+1) if there is a cell above them that is filled and it's the same number => addition
+2) if there is a cell above them that is filled and it's NOT the same number => it stays put
+3) if the cell above is empty/filled with 0, we keep going up until either
+scenario 1 or 2 occurs OR we're at the top row (row == 0)
+"""
+
+
+def move_cells_up_down(grid, direction):
+    if direction == "up":
+        constant = 0
+    if direction == "down":
+        constant = 3
+
+    # MOETNOG hier zorgen dat je van onder naar boven loopt indien
+    # direction == "down"
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if (
-                grid[i][j] != 0 and i != 0
-            ):  # only enter while loop if filled and not already on top row
+                grid[i][j] != 0 and i != constant
+            ):  # only enter while loop if filled and not already on top/bottom row
                 row = i
                 goingup = True
                 while goingup:
-                    row -= 1
+                    if direction == "up":
+                        row -= 1
+                    else:
+                        row += 1
                     if grid[row][j] == grid[i][j]:
                         grid[row][j] += grid[i][j]
                         grid[i][j] = 0
                         goingup = False
-                    elif grid[row][j] == 0 and row != 0:
+                    elif grid[row][j] == 0 and row != constant:
                         goingup = True
-                    elif grid[row][j] == 0 and row == 0:
+                    elif grid[row][j] == 0 and row == constant:
                         grid[row][j] = grid[i][j]
                         grid[i][j] = 0
                         goingup = False
                     elif grid[row][j] != grid[i][j]:
-                        grid[row + 1][j] = grid[i][j]
-                        if not (row + 1) == i:
-                            grid[i][j] = 0
+                        if direction == "up":
+                            grid[row + 1][j] = grid[i][j]
+                            if not (row + 1) == i:
+                                grid[i][j] = 0
+                        if direction == "down":
+                            grid[row - 1][j] = grid[i][j]
+                            if not (row - 1) == i:
+                                grid[i][j] = 0
                         goingup = False
     return grid
 
@@ -104,9 +121,9 @@ def fill_new_cell(grid):
     return grid
 
 
-def swipe_up(grid):
+def swipe_up_down(grid, direction):
     """Combine above functions into one swipe up process"""
-    grid = move_filled_cells_up(grid)
+    grid = move_cells_up_down(grid, direction)
     grid = fill_new_cell(grid)
     print("\n======= Grid after swipe =======")
     print_grid(grid)
@@ -128,5 +145,5 @@ if __name__ == "__main__":
     # fortesting simulate a bunch of swipes
     i = 0
     while i < 20:
-        swipe_right(grid)
+        swipe_up_down(grid, "down")
         i += 1
