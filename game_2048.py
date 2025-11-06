@@ -1,15 +1,15 @@
 from random import randint
 
-
-def initialize_grid():
-    """Initialize playing grid before playing"""
-    """ as a reference
+""" as a reference
     1 | 2 | 3 | 4 |
     5 | 6 | 7 | 8 |
     9 | 10| 11| 12|
     13| 14| 15| 16|
     """
 
+
+def initialize_grid():
+    """Initialize playing grid before playing"""
     # fill two random cells with 2's
     rand1 = randint(1, 16)
     rand2 = randint(1, 16)
@@ -40,8 +40,8 @@ def retrieve_filled_cells(grid):
     return filledcells
 
 
-def swipe_up(filledcells, grid):
-    """Move filledcells to new position. There are 3 possible scenarios:
+def move_filled_cells(filledcells, grid):
+    """Move filled cells to new position. There are 3 possible scenarios:
     1) if there is a cell above them that is filled and it's the same number => addition
     2) if there is a cell above them that is filled and it's NOT the same number => it stays put
     3) if the cell above is empty/filled with 0, we keep going up until either
@@ -75,17 +75,28 @@ def fill_new_cell(grid):
         for j in range(len(grid[i])):
             if grid[i][j] == 0:
                 randcorpool.append((i, j))
-    cornew = randcorpool[randint(1, len(randcorpool))]
+    cornew = randcorpool[randint(0, len(randcorpool) - 1)]
     grid[cornew[0]][cornew[1]] = 2
     return grid
+
+
+def swipe_up(grid):
+    """Combine above functions into one swipe up process"""
+    filledcells = retrieve_filled_cells(grid)
+    grid = move_filled_cells(filledcells, grid)
+    grid = fill_new_cell(grid)
+    print("\n======= Grid after swipe up =======")  # moetnog terug aan
+    print_grid(grid)  # moetnog terug aan
 
 
 if __name__ == "__main__":
     grid = initialize_grid()
     print("\n======= Grid after setup =======")
     print_grid(grid)
-    filledcells = retrieve_filled_cells(grid)
-    grid = swipe_up(filledcells, grid)
-    grid = fill_new_cell(grid)
-    print("\n======= Grid after swipe up =======")
-    print_grid(grid)
+
+    # for testing simulate a bunch of swipe ups
+    i = 0
+    while i < 10:
+        print(f"\n======= SWIPE n {i}=======")  # fortesting
+        swipe_up(grid)
+        i += 1
