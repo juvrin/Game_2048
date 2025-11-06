@@ -57,13 +57,16 @@ def move_filled_cells(filledcells, grid):
                     grid[row][fc[1]] += grid[fc[0]][fc[1]]
                     grid[fc[0]][fc[1]] = 0
                     goingup = False
-                elif grid[row][fc[1]] != grid[fc[0]][fc[1]] and grid[row][fc[1]] != 0:
-                    goingup = False
                 elif grid[row][fc[1]] == 0 and row != 0:
-                    continue
-                elif row == 0:
+                    goingup = True
+                elif grid[row][fc[1]] == 0 and row == 0:
                     grid[row][fc[1]] = grid[fc[0]][fc[1]]
                     grid[fc[0]][fc[1]] = 0
+                    goingup = False
+                elif grid[row][fc[1]] != grid[fc[0]][fc[1]]:
+                    grid[row + 1][fc[1]] = grid[fc[0]][fc[1]]
+                    if not (row + 1) == fc[0]:
+                        grid[fc[0]][fc[1]] = 0
                     goingup = False
     return grid
 
@@ -85,8 +88,8 @@ def swipe_up(grid):
     filledcells = retrieve_filled_cells(grid)
     grid = move_filled_cells(filledcells, grid)
     grid = fill_new_cell(grid)
-    print("\n======= Grid after swipe up =======")  # moetnog terug aan
-    print_grid(grid)  # moetnog terug aan
+    print("\n======= Grid after swipe up =======")
+    print_grid(grid)
 
 
 if __name__ == "__main__":
@@ -94,9 +97,8 @@ if __name__ == "__main__":
     print("\n======= Grid after setup =======")
     print_grid(grid)
 
-    # for testing simulate a bunch of swipe ups
+    # fortesting simulate a bunch of swipe ups
     i = 0
-    while i < 10:
-        print(f"\n======= SWIPE n {i}=======")  # fortesting
+    while i < 20:
         swipe_up(grid)
         i += 1
