@@ -30,82 +30,101 @@ def print_grid(grid):
     print(*grid, sep="\n")
 
 
-"""Move filled cells to new position. There are 3 possible scenarios:
-1) if there is a cell above them that is filled and it's the same number => addition
-2) if there is a cell above them that is filled and it's NOT the same number => it stays put
-3) if the cell above is empty/filled with 0, we keep going up until either
-scenario 1 or 2 occurs OR we're at the top row (row == 0)
-"""
-
-
-def move_cells_up_down(grid, direction):
-    if direction == "up":
-        constant = 0
-    if direction == "down":
-        constant = 3
-
-    # MOETNOG hier zorgen dat je van onder naar boven loopt indien
-    # direction == "down"
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if (
-                grid[i][j] != 0 and i != constant
-            ):  # only enter while loop if filled and not already on top/bottom row
-                row = i
-                goingup = True
-                while goingup:
+def loop_up_down(i, grid, direction, constant):
+    """Function to loop up and down"""
+    for j in range(len(grid[i])):
+        if (
+            grid[i][j] != 0 and i != constant
+        ):  # only enter while loop if filled and not already on top/bottom row
+            row = i
+            going = True
+            while going:
+                if direction == "up":
+                    row -= 1
+                else:
+                    row += 1
+                if grid[row][j] == grid[i][j]:
+                    grid[row][j] += grid[i][j]
+                    grid[i][j] = 0
+                    going = False
+                elif grid[row][j] == 0 and row != constant:
+                    going = True
+                elif grid[row][j] == 0 and row == constant:
+                    grid[row][j] = grid[i][j]
+                    grid[i][j] = 0
+                    going = False
+                elif grid[row][j] != grid[i][j]:
                     if direction == "up":
-                        row -= 1
-                    else:
-                        row += 1
-                    if grid[row][j] == grid[i][j]:
-                        grid[row][j] += grid[i][j]
-                        grid[i][j] = 0
-                        goingup = False
-                    elif grid[row][j] == 0 and row != constant:
-                        goingup = True
-                    elif grid[row][j] == 0 and row == constant:
-                        grid[row][j] = grid[i][j]
-                        grid[i][j] = 0
-                        goingup = False
-                    elif grid[row][j] != grid[i][j]:
-                        if direction == "up":
-                            grid[row + 1][j] = grid[i][j]
-                            if not (row + 1) == i:
-                                grid[i][j] = 0
-                        if direction == "down":
-                            grid[row - 1][j] = grid[i][j]
-                            if not (row - 1) == i:
-                                grid[i][j] = 0
-                        goingup = False
+                        grid[row + 1][j] = grid[i][j]
+                        if not (row + 1) == i:
+                            grid[i][j] = 0
+                    if direction == "down":
+                        grid[row - 1][j] = grid[i][j]
+                        if not (row - 1) == i:
+                            grid[i][j] = 0
+                    going = False
     return grid
 
 
-def move_filled_cells_right(grid):
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
+# MOETNOG dit werkt nog niet
+def loop_left(grid, direction, constant):
+    """Function to loop left and right"""
+    j = 0
+    while j < len(grid[0]):
+        for i in grid:
             if (
-                grid[i][j] != 0 and j != 3
-            ):  # only enter while loop if filled and not already in utmost right column
+                i[j] != 0 and j != constant
+            ):  # only enter while loop if filled and not already in utmost left/right column
                 col = j
-                goingright = True
-                while goingright:
-                    col += 1
-                    if grid[i][col] == grid[i][j]:
-                        grid[i][col] += grid[i][j]
-                        grid[i][j] = 0
-                        goingright = False
-                    elif grid[i][col] == 0 and col != 3:
-                        goingright = True
-                    elif grid[i][col] == 0 and col == 3:
-                        grid[i][col] = grid[i][j]
-                        grid[i][j] = 0
-                        goingright = False
-                    elif grid[i][col] != grid[i][j]:
-                        grid[i][col - 1] = grid[i][j]
-                        if not (col - 1) == j:
-                            grid[i][j] = 0
-                        goingright = False
+                going = True
+                while going:
+                    if direction == "left":
+                        col -= 1
+                    else:
+                        col += 1
+                    if i[col] == i[j]:
+                        i[col] += i[j]
+                        i[j] = 0
+                        going = False
+                    elif i[col] == 0 and col != constant:
+                        going = True
+                    elif i[col] == 0 and col == constant:
+                        i[col] = i[j]
+                        i[j] = 0
+                        going = False
+                    elif i[col] != i[j]:
+                        if direction == "left":
+                            i[col + 1] = i[j]
+                            if not (col + 1) == j:
+                                i[j] = 0
+                        if direction == "right":
+                            i[col - 1] = i[j]
+                            if not (col - 1) == j:
+                                i[j] = 0
+                        going = False
+            j += 1
+
+    return grid
+
+
+def move_cells(grid, direction):
+    if direction == "up":
+        constant = 0
+        for i in range(len(grid)):
+            loop_up_down(i, grid, direction, constant)
+    if direction == "down":
+        constant = 3
+        for i in range(len(grid) - 1, -1, -1):
+            loop_up_down(i, grid, direction, constant)
+    if direction == "left":
+        constant = 0
+        loop_left(grid, direction, constant)
+    if direction == "right":
+        constant = 3
+        # dit is hoe je dan moet loopen: steeds over het laatste element van de versch lijsten binnen grid
+        # dan naar het tweede element etc
+        # grid[0][3] => grid [1][3] => grid[2][3] => grid[3][3] => grid[0][2] => grid[1][2] etc
+        # for i in range zorgen dat je looped van R kolom eerst naar L kolommen
     return grid
 
 
@@ -121,17 +140,9 @@ def fill_new_cell(grid):
     return grid
 
 
-def swipe_up_down(grid, direction):
-    """Combine above functions into one swipe up process"""
-    grid = move_cells_up_down(grid, direction)
-    grid = fill_new_cell(grid)
-    print("\n======= Grid after swipe =======")
-    print_grid(grid)
-
-
-def swipe_right(grid):
-    """Combine above functions into one swipe right process"""
-    grid = move_filled_cells_right(grid)
+def swipe(grid, direction):
+    """Combine above functions into one swipe process"""
+    grid = move_cells(grid, direction)
     grid = fill_new_cell(grid)
     print("\n======= Grid after swipe =======")
     print_grid(grid)
@@ -144,6 +155,6 @@ if __name__ == "__main__":
 
     # fortesting simulate a bunch of swipes
     i = 0
-    while i < 20:
-        swipe_up_down(grid, "down")
+    while i < 10:
+        swipe(grid, "left")
         i += 1
