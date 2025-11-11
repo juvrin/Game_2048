@@ -1,4 +1,5 @@
 from random import randint
+from copy import deepcopy
 
 """ as a reference
     1 | 2 | 3 | 4 |
@@ -30,101 +31,48 @@ def print_grid(grid):
     print(*grid, sep="\n")
 
 
-def loop_up_down(i, grid, direction, constant):
-    """Function to loop up and down"""
-    for j in range(len(grid[i])):
-        if (
-            grid[i][j] != 0 and i != constant
-        ):  # only enter while loop if filled and not already on top/bottom row
-            row = i
-            going = True
-            while going:
-                if direction == "up":
+def rotate90(grid):
+    rotatedgrid = deepcopy(grid)
+    for i in range(0, len(grid)):
+        for j in range(0, len(grid)):
+            rotatedgrid[i][j] = grid[-(j + 1)][i]
+    return rotatedgrid
+
+
+def rotate90back(grid):
+    rotatedbackgrid = deepcopy(grid)
+    for i in range(0, len(grid)):
+        for j in range(0, len(grid)):
+            rotatedbackgrid[-(j + 1)][i] = grid[i][j]
+    return rotatedbackgrid
+
+
+def move_cells(grid):
+    """Function to move cells"""
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if (
+                grid[i][j] != 0 and i != 0
+            ):  # only enter while loop if filled and not already in utmost row/column
+                row = i
+                going = True
+                while going:
                     row -= 1
-                else:
-                    row += 1
-                if grid[row][j] == grid[i][j]:
-                    grid[row][j] += grid[i][j]
-                    grid[i][j] = 0
-                    going = False
-                elif grid[row][j] == 0 and row != constant:
-                    going = True
-                elif grid[row][j] == 0 and row == constant:
-                    grid[row][j] = grid[i][j]
-                    grid[i][j] = 0
-                    going = False
-                elif grid[row][j] != grid[i][j]:
-                    if direction == "up":
+                    if grid[row][j] == grid[i][j]:
+                        grid[row][j] += grid[i][j]
+                        grid[i][j] = 0
+                        going = False
+                    elif grid[row][j] == 0 and row != 0:
+                        going = True
+                    elif grid[row][j] == 0 and row == 0:
+                        grid[row][j] = grid[i][j]
+                        grid[i][j] = 0
+                        going = False
+                    elif grid[row][j] != grid[i][j]:
                         grid[row + 1][j] = grid[i][j]
                         if not (row + 1) == i:
                             grid[i][j] = 0
-                    if direction == "down":
-                        grid[row - 1][j] = grid[i][j]
-                        if not (row - 1) == i:
-                            grid[i][j] = 0
-                    going = False
-    return grid
-
-
-# MOETNOG dit werkt nog niet
-def loop_left(grid, direction, constant):
-    """Function to loop left and right"""
-    j = 0
-    while j < len(grid[0]):
-        for i in grid:
-            if (
-                i[j] != 0 and j != constant
-            ):  # only enter while loop if filled and not already in utmost left/right column
-                col = j
-                going = True
-                while going:
-                    if direction == "left":
-                        col -= 1
-                    else:
-                        col += 1
-                    if i[col] == i[j]:
-                        i[col] += i[j]
-                        i[j] = 0
                         going = False
-                    elif i[col] == 0 and col != constant:
-                        going = True
-                    elif i[col] == 0 and col == constant:
-                        i[col] = i[j]
-                        i[j] = 0
-                        going = False
-                    elif i[col] != i[j]:
-                        if direction == "left":
-                            i[col + 1] = i[j]
-                            if not (col + 1) == j:
-                                i[j] = 0
-                        if direction == "right":
-                            i[col - 1] = i[j]
-                            if not (col - 1) == j:
-                                i[j] = 0
-                        going = False
-            j += 1
-
-    return grid
-
-
-def move_cells(grid, direction):
-    if direction == "up":
-        constant = 0
-        for i in range(len(grid)):
-            loop_up_down(i, grid, direction, constant)
-    if direction == "down":
-        constant = 3
-        for i in range(len(grid) - 1, -1, -1):
-            loop_up_down(i, grid, direction, constant)
-    if direction == "left":
-        constant = 0
-        loop_left(grid, direction, constant)
-    if direction == "right":
-        constant = 3
-        # dit is hoe je dan moet loopen: steeds over het laatste element van de versch lijsten binnen grid
-        # dan naar het tweede element etc
-        # grid[0][3] => grid [1][3] => grid[2][3] => grid[3][3] => grid[0][2] => grid[1][2] etc
-        # for i in range zorgen dat je looped van R kolom eerst naar L kolommen
     return grid
 
 
@@ -142,10 +90,29 @@ def fill_new_cell(grid):
 
 def swipe(grid, direction):
     """Combine above functions into one swipe process"""
-    grid = move_cells(grid, direction)
+    match direction:
+        case "left":
+            grid = rotate90(grid)
+        case "right":
+            grid = rotate90back(grid)
+        case "down":
+            grid1 = rotate90(grid)
+            grid = rotate90(grid1)
+    grid = move_cells(grid)
     grid = fill_new_cell(grid)
+
+    match direction:
+        case "left":
+            grid = rotate90back(grid)
+        case "right":
+            grid = rotate90(grid)
+        case "down":
+            grid1 = rotate90(grid)
+            grid = rotate90(grid1)
+
     print("\n======= Grid after swipe =======")
     print_grid(grid)
+    return grid
 
 
 if __name__ == "__main__":
@@ -156,5 +123,5 @@ if __name__ == "__main__":
     # fortesting simulate a bunch of swipes
     i = 0
     while i < 10:
-        swipe(grid, "left")
+        grid = swipe(grid, "down")
         i += 1
