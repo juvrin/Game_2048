@@ -32,6 +32,7 @@ def print_grid(grid):
 
 
 def rotate90(grid):
+    """Rotate the grid 90 degrees clockwise"""
     rotatedgrid = deepcopy(grid)
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
@@ -40,6 +41,7 @@ def rotate90(grid):
 
 
 def rotate90back(grid):
+    """Rotate the grid 90 degrees counterclockwise"""
     rotatedbackgrid = deepcopy(grid)
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
@@ -48,7 +50,7 @@ def rotate90back(grid):
 
 
 def move_cells(grid):
-    """Function to move cells"""
+    """Cells are always moved up in the grid"""
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if (
