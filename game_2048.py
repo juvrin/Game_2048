@@ -1,5 +1,6 @@
 from random import randint
 from copy import deepcopy
+import pyfiglet
 
 """ as a reference
     1 | 2 | 3 | 4 |
@@ -24,11 +25,6 @@ def initialize_grid():
     grid[cor1[0]][cor1[1]] = 2
     grid[cor2[0]][cor2[1]] = 2
     return grid
-
-
-def print_grid(grid):
-    """Print the grid with one list per line"""
-    print(*grid, sep="\n")
 
 
 def rotate90(grid):
@@ -110,8 +106,8 @@ def swipe(grid, direction):
             grid1 = rotate90(grid)
             grid = rotate90(grid1)
 
-    print("\n======= Grid after swipe =======")
-    print_grid(grid)
+    print(*grid, sep="\n")
+    print("\n")
     return grid
 
 
@@ -135,7 +131,15 @@ def game_loop(grid):
 
 
 if __name__ == "__main__":
+    welcome = pyfiglet.figlet_format("Welcome to 2048", font="slant")
+    print(welcome)
     grid = initialize_grid()
-    print("\n======= Grid after setup =======")
-    print_grid(grid)
+    print(*grid, sep="\n")
+    print("\n")
     game_loop(grid)
+
+    # # fortesting simulate a bunch of swipes
+    # i = 0
+    # while i < 10:
+    #     grid = swipe(grid, "down")
+    #     i += 1
