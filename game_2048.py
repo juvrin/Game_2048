@@ -47,15 +47,19 @@ def move_cells(grid):
     """Function to move cells"""
     for i in range(len(grid)):
         for j in range(len(grid[i])):
-            if (
-                grid[i][j] != 0 and i != 0
-            ):  # only enter while loop if filled and not already in utmost row/column
+            if grid[i][j] != 0 and i != 0 and grid[i][j] != "X":
                 row = i
                 going = True
                 while going:
                     row -= 1
                     if grid[row][j] == grid[i][j]:
                         grid[row][j] += grid[i][j]
+                        grid[row + 1][j] = "X"
+                        if not (row + 1) == i:
+                            grid[i][j] = 0
+                        going = False
+                    elif grid[row][j] == "X":
+                        grid[row][j] = grid[i][j]
                         grid[i][j] = 0
                         going = False
                     elif grid[row][j] == 0 and row != 0:
@@ -69,6 +73,11 @@ def move_cells(grid):
                         if not (row + 1) == i:
                             grid[i][j] = 0
                         going = False
+
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == "X":
+                grid[i][j] = 0
     return grid
 
 
