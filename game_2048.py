@@ -32,7 +32,6 @@ def print_grid(grid):
 
 
 def rotate90(grid):
-    """Rotate the grid 90 degrees clockwise"""
     rotatedgrid = deepcopy(grid)
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
@@ -41,7 +40,6 @@ def rotate90(grid):
 
 
 def rotate90back(grid):
-    """Rotate the grid 90 degrees counterclockwise"""
     rotatedbackgrid = deepcopy(grid)
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
@@ -50,7 +48,7 @@ def rotate90back(grid):
 
 
 def move_cells(grid):
-    """Cells are always moved up in the grid"""
+    """Function to move cells"""
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if (
@@ -117,13 +115,27 @@ def swipe(grid, direction):
     return grid
 
 
+def game_loop(grid):
+    """Main game loop"""
+    while True:
+        press = input(
+            "Press w for up, s for down, a for left, d for right, q to quit: "
+        )
+        match press:
+            case "w":
+                grid = swipe(grid, "up")
+            case "s":
+                grid = swipe(grid, "down")
+            case "a":
+                grid = swipe(grid, "left")
+            case "d":
+                grid = swipe(grid, "right")
+            case "q":
+                break
+
+
 if __name__ == "__main__":
     grid = initialize_grid()
     print("\n======= Grid after setup =======")
     print_grid(grid)
-
-    # fortesting simulate a bunch of swipes
-    i = 0
-    while i < 10:
-        grid = swipe(grid, "down")
-        i += 1
+    game_loop(grid)
