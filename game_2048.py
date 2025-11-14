@@ -45,6 +45,7 @@ def rotate90back(grid):
 
 def move_cells(grid):
     """Function to move cells"""
+    countmoves = 0
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if grid[i][j] != 0 and i != 0 and grid[i][j] != "X":
@@ -57,28 +58,48 @@ def move_cells(grid):
                         grid[row + 1][j] = "X"
                         if not (row + 1) == i:
                             grid[i][j] = 0
+                            countmoves += 1
                         going = False
                     elif grid[row][j] == "X":
                         grid[row][j] = grid[i][j]
                         grid[i][j] = 0
+                        countmoves += 1
                         going = False
                     elif grid[row][j] == 0 and row != 0:
                         going = True
                     elif grid[row][j] == 0 and row == 0:
                         grid[row][j] = grid[i][j]
                         grid[i][j] = 0
+                        countmoves += 1
                         going = False
                     elif grid[row][j] != grid[i][j]:
                         grid[row + 1][j] = grid[i][j]
                         if not (row + 1) == i:
                             grid[i][j] = 0
+                            countmoves += 1
                         going = False
 
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if grid[i][j] == "X":
                 grid[i][j] = 0
-    return grid
+
+    return grid, countmoves
+
+
+def check_finished(grid, gameover, countmoves):
+    """Check if game is finished"""
+    countfill = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == 2048:
+                gameover = True
+            if grid[i][j] != 0:
+                countfill += 1
+
+    if countmoves == 0 and countfill == 16:
+        gameover = True
+    return gameover
 
 
 def fill_new_cell(grid):
@@ -103,8 +124,10 @@ def swipe(grid, direction):
         case "down":
             grid1 = rotate90(grid)
             grid = rotate90(grid1)
-    grid = move_cells(grid)
-    grid = fill_new_cell(grid)
+
+    grid, countmoves = move_cells(grid)
+    if countmoves > 0:
+        grid = fill_new_cell(grid)
 
     match direction:
         case "left":
@@ -114,29 +137,39 @@ def swipe(grid, direction):
         case "down":
             grid1 = rotate90(grid)
             grid = rotate90(grid1)
-
     print(*grid, sep="\n")
     print("\n")
-    return grid
+    return grid, countmoves
 
 
 def game_loop(grid):
     """Main game loop"""
-    while True:
+    gameover = False
+    countgrids = 0
+    while gameover == False:
         press = input(
             "Press w for up, s for down, a for left, d for right, q to quit: "
         )
+        """
+        # start fortesting
+        options = ["w", "s", "a", "d"]
+        randnum = randint(0, 3)
+        press = options[randnum]
+        # end fortesting
+        """
         match press:
             case "w":
-                grid = swipe(grid, "up")
+                grid, countmoves = swipe(grid, "up")
             case "s":
-                grid = swipe(grid, "down")
+                grid, countmoves = swipe(grid, "down")
             case "a":
-                grid = swipe(grid, "left")
+                grid, countmoves = swipe(grid, "left")
             case "d":
-                grid = swipe(grid, "right")
+                grid, countmoves = swipe(grid, "right")
             case "q":
                 break
+        countgrids += 1
+        gameover = check_finished(grid, gameover, countmoves)
 
 
 if __name__ == "__main__":
@@ -146,9 +179,5 @@ if __name__ == "__main__":
     print(*grid, sep="\n")
     print("\n")
     game_loop(grid)
-
-    # # fortesting simulate a bunch of swipes
-    # i = 0
-    # while i < 10:
-    #     grid = swipe(grid, "down")
-    #     i += 1
+    gameover = pyfiglet.figlet_format("Game over", font="slant")
+    print(gameover)
