@@ -45,7 +45,7 @@ This way, I could ensure that newly created sums/tiles are not being summed twic
 ## Contact
 
 Jules Vrinten https://www.linkedin.com/in/jules-vrinten/ 
-https://github.com/juvrin ~
+https://github.com/juvrin
 
 
 ## License
