@@ -1,6 +1,8 @@
+import random
 from random import randint
 from copy import deepcopy
 import pyfiglet
+
 
 """ as a reference
     1 | 2 | 3 | 4 |
@@ -12,16 +14,15 @@ import pyfiglet
 
 def initialize_grid():
     """Initialize playing grid before playing"""
-    # fill two random cells with 2's
-    rand1 = randint(1, 16)
-    rand2 = randint(1, 16)
+    # Generate 2 unique random numbers between 1 and 16
+    a = random.sample(range(1, 16), 2)
 
     # initiate grid
     grid = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
     # replace blank space with '2' for the randomly selected cells
-    cor1 = ((rand1 - 1) // 4), ((rand1 - 1) % 4)
-    cor2 = ((rand2 - 1) // 4), ((rand2 - 1) % 4)
+    cor1 = ((a[0] - 1) // 4), ((a[0] - 1) % 4)
+    cor2 = ((a[1] - 1) // 4), ((a[1] - 1) % 4)
     grid[cor1[0]][cor1[1]] = 2
     grid[cor2[0]][cor2[1]] = 2
     return grid
