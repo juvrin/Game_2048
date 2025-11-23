@@ -40,7 +40,9 @@ This way, I could ensure that newly created sums/tiles are not being summed twic
 
 ## Roadmap
 
-- Add a graphical interface with pygame
+- Maybe add a graphical interface with pygame.
+
+- Maybe make it so that cells are empty.
 
 ## Contact
 
