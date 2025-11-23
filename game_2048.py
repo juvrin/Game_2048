@@ -137,7 +137,8 @@ def swipe(grid, direction):
         case "down":
             grid1 = rotate90(grid)
             grid = rotate90(grid1)
-    print(*grid, sep="\n")
+    for i in grid:
+        print(" ".join([str(l).rjust(5) for l in i]))
     print("\n")
     return grid, countmoves
 
@@ -150,13 +151,7 @@ def game_loop(grid):
         press = input(
             "Press w for up, s for down, a for left, d for right, q to quit: "
         )
-        """
-        # start fortesting
-        options = ["w", "s", "a", "d"]
-        randnum = randint(0, 3)
-        press = options[randnum]
-        # end fortesting
-        """
+
         match press:
             case "w":
                 grid, countmoves = swipe(grid, "up")
@@ -176,7 +171,8 @@ if __name__ == "__main__":
     welcome = pyfiglet.figlet_format("Welcome to 2048", font="slant")
     print(welcome)
     grid = initialize_grid()
-    print(*grid, sep="\n")
+    for i in grid:
+        print(" ".join([str(l).rjust(5) for l in i]))
     print("\n")
     game_loop(grid)
     gameover = pyfiglet.figlet_format("Game over", font="slant")
